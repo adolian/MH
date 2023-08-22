@@ -1,0 +1,84 @@
+function beanstalk() {
+  if (GetCurrentLocation().indexOf("Bountiful Beanstalk") < 0)
+    return;
+
+  const objUser = JSON.parse(getPageVariable('JSON.stringify(user.quests.QuestBountifulBeanstalk)'));
+  const fuelButton = document.getElementsByClassName("headsUpDisplayBountifulBeanstalkView__fuelToggleButton")[0];
+
+  if (!objUser.in_castle) {
+    if (objUser.is_fuel_enabled) {
+      fireEvent(fuelButton, 'click');
+    }
+    checkThenArm(null, "base", "Prestige Base");
+    checkThenArm(null, "trinket", "Ancient Charm");
+    if (objUser.loot_multipliers.total > 4) {
+      return;
+    }
+    $('.bountifulBeanstalkClimbView__plantVineDialogButton').click();
+    let enterCastle = setInterval(function() {
+      console.log("Enter Castle");
+      if ($('.bountifulBeanstalkPlantVineDialogView__plantVineButton').length) {
+        clearInterval(enterCastle);
+        setTimeout(function() {
+          // ======= Select vine type =========
+          $('[data-vine-type="short_vine"]').click();
+          // $('[data-vine-type="medium_vine"]').click();
+          // $('[data-vine-type="tall_vine"]').click();
+          setTimeout(function() {
+            $('.bountifulBeanstalkPlantVineDialogView__plantVineButton').click();
+            setTimeout(function() {
+              $('.bountifulBeanstalkPlantVineDialogView__confirmDialogPlantButton').click();
+            }, 1500);
+          }, 2000);
+        }, 500);
+        enterCastle = null;
+      }
+    }, 100);
+  }
+
+  if (objUser.castle.is_boss_chase) {
+    if (objUser.loot_multipliers.math[1].value == 8) {
+      // mystery room  = all loot
+      // objUser.castle.current_room.type.indexOf('mystery')
+      if (objUser.castle.is_boss_encounter) {
+        // if (objUser.is_fuel_enabled) {
+        // fireEvent(fuelButton, 'click');
+        // }
+        // checkThenArm(null, "bait", "Beanster Cheese");
+        // checkThenArm(null, "bait", "Gouda Cheese");
+      } else {
+        // if (!objUser.is_fuel_enabled) {
+        // fireEvent(fuelButton, 'click');
+        // }
+        if (objUser.castle.max_noise_level == 300) {
+          checkThenArm(null, "bait", "Royal Beanster Cheese");
+        }
+      }
+    } else if (objUser.loot_multipliers.math[1].value == 4) {
+      checkThenArm(null, "bait", "Beanster Cheese");
+    } else {
+      checkThenArm(null, "bait", "Gouda Cheese");
+    }
+  } else {
+    if (objUser.loot_multipliers.math[1].value == 8) {
+      if (objUser.castle.max_noise_level == 300) {
+        checkThenArm(null, "bait", "Royal Beanster Cheese");
+        checkThenArm(null, "base", "Signature Series Denture Base");
+        checkThenArm(null, "trinket", "Festive Ultimate Lucky Power Charm");
+        if (!objUser.is_fuel_enabled) {
+          fireEvent(fuelButton, 'click');
+        }
+        if (objUser.castle.is_auto_harp_enabled) {
+          setTimeout(function() {
+            document.querySelector('.headsUpDisplayBountifulBeanstalkView__playHarpDialogButtonPlayText').click();
+            setTimeout(function() {
+              document.querySelector('.bountifulBeanstalkPlayHarpDialogView__autoHarpPlayButton').click();
+            }, 1000);
+          }, 3000);
+        }
+      } else {
+        checkThenArm(null, "bait", "Beanster Cheese");
+      }
+    }
+  }
+}
